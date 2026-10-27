@@ -1,0 +1,680 @@
+﻿
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyLens</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .main-wrapper {
+            display: flex;
+            gap: 20px;
+            max-width: 1000px;
+            width: 100%;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .container {
+            background-color: var(--card-bg);
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            width: 100%;
+            max-width: 650px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            flex: 1;
+        }
+        .sidebar {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            width: 260px;
+            border: 1px solid rgba(255,255,255,0.05);
+            text-align: right;
+            display: none;
+        }
+        .sidebar h3 {
+            color: #818cf8;
+            margin-top: 0;
+            font-size: 1.2em;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+        }
+        .sidebar ul {
+            padding-right: 20px;
+            margin: 10px 0;
+            color: #94a3b8;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .sidebar li strong {
+            color: #f8fafc;
+        }
+        h1 {
+            color: #818cf8;
+            margin-bottom: 5px;
+            font-size: 2.2em;
+        }
+        .subtitle {
+            color: #f59e0b;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #94a3b8;
+            margin-bottom: 25px;
+        }
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 8px 0;
+            width: 100%;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(99, 102, 241, 0.5);
+        }
+        .btn-secondary {
+            background: #334155;
+            box-shadow: none;
+        }
+        .btn-secondary:hover {
+            background: #475569;
+            box-shadow: none;
+        }
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+            max-height: 420px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        .topic-btn {
+            background: #334155;
+            color: white;
+            border: 2px solid #475569;
+            padding: 15px 10px;
+            font-size: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+        .topic-btn:hover {
+            border-color: var(--primary);
+            background: #1e293b;
+            transform: translateY(-2px);
+        }
+        .option-btn {
+            background-color: #334155;
+            color: white;
+            border: 2px solid #475569;
+            padding: 14px;
+            font-size: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            transition: all 0.2s;
+            text-align: right;
+            font-weight: 500;
+        }
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background-color: #1e293b;
+        }
+        .game-header {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .game-title-top {
+            font-size: 2em;
+            font-weight: bold;
+            color: #818cf8;
+            margin-bottom: 4px;
+        }
+        .game-rank-sub {
+            font-size: 1.15em;
+            color: #f59e0b;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: bold;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 10px;
+            align-items: center;
+        }
+        .input-group {
+            margin: 15px 0;
+            text-align: right;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-weight: bold;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .feedback {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .correct-feedback { color: var(--accent); }
+        .wrong-feedback { color: var(--danger); }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <div class="container" id="app">
+        <!-- מסך תפריט ראשי -->
+        <div id="menu-screen">
+            <h1>StudyLens</h1>
+            <div class="subtitle">מתחיל 🥉</div>
+            <p>בחר את הנושא שתרצה לשחק בו:</p>
+            <div class="topics-grid" id="topics-container"></div>
+        </div>
+
+        <!-- מסך בחירת רמת קושי וכמות שאלות -->
+        <div id="difficulty-screen" class="hidden">
+            <h2 id="selected-topic-title" style="color: #818cf8;">בחר רמת קושי</h2>
+            <p>בחר את ההגדרות למשחק שלך:</p>
+            
+            <div class="input-group">
+                <label for="num-questions">כמות שאלות למשחק (עד 50):</label>
+                <input type="number" id="num-questions" min="1" max="50" value="5">
+            </div>
+
+            <button class="btn" onclick="setDifficulty('קל')">קל 🟢</button>
+            <button class="btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000;" onclick="setDifficulty('בינוני')">בינוני 🟡</button>
+            <button class="btn" style="background: linear-gradient(135deg, #ef4444, #dc2626);" onclick="setDifficulty('קשה')">קשה 🔴</button>
+            <button class="btn btn-secondary" onclick="backToMenu()" style="margin-top: 15px;">חזרה לנושאים</button>
+        </div>
+
+        <!-- מסך משחק -->
+        <div id="game-screen" class="hidden">
+            <div class="game-header">
+                <div class="game-title-top">StudyLens</div>
+                <div class="game-rank-sub" id="rank">מתחיל 🥉</div>
+                <div class="score-row">
+                    <span>ניקוד: <span id="score">0</span></span>
+                    <span>שאלה <span id="current-q-num">1</span>/<span id="total-q-num">3</span></span>
+                    <button class="btn-secondary" onclick="backToMenu()" style="padding: 4px 10px; font-size: 12px; border-radius: 6px; width: auto; margin: 0;">יציאה</button>
+                </div>
+            </div>
+            
+            <h2 id="question-text" style="color: #f8fafc; font-size: 1.4em; margin-bottom: 20px;">השאלה תופיע כאן</h2>
+            <div id="options-container"></div>
+            <div id="feedback-area" class="feedback"></div>
+            <button id="next-btn" class="btn hidden" onclick="nextQuestion()" style="margin-top: 15px;">לשאלה הבאה ⬅</button>
+        </div>
+
+        <!-- מסך סיום -->
+        <div id="end-screen" class="hidden">
+            <h2 style="color: #10b981;">כל הכבוד! סיימת את המשחק</h2>
+            <p style="font-size: 1.1em; margin: 15px 0;">הניקוד הסופי שלך: <span id="final-score" style="color: #818cf8; font-weight: bold;">0</span></p>
+            <p style="font-size: 1.1em; margin-bottom: 25px;">הדרגה שלך: <span id="final-rank" style="color: #f59e0b; font-weight: bold;"></span></p>
+            <button class="btn" onclick="backToMenu()">חזרה לתפריט הראשי</button>
+        </div>
+    </div>
+
+    <!-- צד מסך הפתיחה - טבלת דרגות -->
+    <div class="sidebar" id="ranks-sidebar">
+        <h3>🏆 טבלת דרגות</h3>
+        <p style="font-size:0.85em; margin-bottom:8px; color:#94a3b8;">עולים כל 50 נקודות:</p>
+        <ul>
+            <li><strong>0 - 49:</strong> מתחיל 🥉</li>
+            <li><strong>50 - 99:</strong> לומד מתקדם 🥈</li>
+            <li><strong>100 - 149:</strong> מומחה 🥇</li>
+            <li><strong>150 - 199:</strong> מאסטר 💎</li>
+            <li><strong>200+:</strong> אלוף StudyLens 👑</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    const gameData = {
+        // --- 1. מתמטיקה ---
+        "מתמטיקה: חיבור וחיסור": {
+            "קל": [{ question: "כמה זה 15 + 7?", options: ["21", "22", "23", "20"], correct: 1 }, { question: "כמה זה 30 - 12?", options: ["18", "16", "20", "15"], correct: 0 }],
+            "בינוני": [{ question: "כמה זה 124 + 86?", options: ["200", "210", "220", "190"], correct: 1 }, { question: "כמה זה 250 - 85?", options: ["165", "175", "155", "160"], correct: 0 }],
+            "קשה": [{ question: "כמה זה 543 - 278?", options: ["265", "275", "255", "267"], correct: 0 }]
+        },
+        "מתמטיקה: כפל וחילוק": {
+            "קל": [{ question: "כמה זה 6 כפול 7?", options: ["42", "48", "36", "49"], correct: 0 }, { question: "כמה זה 36 לחלק ל-4?", options: ["7", "8", "9", "6"], correct: 2 }],
+            "בינוני": [{ question: "כמה זה 12 כפול 11?", options: ["121", "132", "144", "130"], correct: 1 }, { question: "כמה זה 144 לחלק ל-12?", options: ["10", "11", "12", "14"], correct: 2 }],
+            "קשה": [{ question: "כמה זה 25 כפול 16?", options: ["380", "400", "420", "450"], correct: 1 }]
+        },
+        "מתמטיקה: שברים פשוטים": {
+            "קל": [{ question: "כמה זה חצי מתוך 10?", options: ["4", "5", "6", "3"], correct: 1 }],
+            "בינוני": [{ question: "כמה זה שלושה רבעים ועוד רבע?", options: ["חצי", "שלם (1)", "שני שלמים", "רבע"], correct: 1 }],
+            "קשה": [{ question: "איזה שבר גדול יותר: 3/4 או 4/5?", options: ["3/4", "4/5", "שווים", "אי אפשר לדעת"], correct: 1 }]
+        },
+        "מתמטיקה: אחוזים": {
+            "קל": [{ question: "כמה זה 50 אחוז מתוך 100?", options: ["25", "50", "75", "10"], correct: 1 }],
+            "בינוני": [{ question: "כמה זה 15 אחוז מתוך 200?", options: ["20", "25", "30", "35"], correct: 2 }],
+            "קשה": [{ question: "מוצר עלה 400 ש\"ח וירד ב-25%. מהחיוב החדש?", options: ["300", "350", "280", "320"], correct: 0 }]
+        },
+        "מתמטיקה: משוואות פשוטות": {
+            "קל": [{ question: "מהו פתרון המשוואה: x + 5 = 12?", options: ["x = 5", "x = 7", "x = 12", "x = 2"], correct: 1 }],
+            "בינוני": [{ question: "מהו פתרון המשוואה: 3x - 5 = 10?", options: ["x = 3", "x = 5", "x = 7", "x = 10"], correct: 1 }],
+            "קשה": [{ question: "מהו פתרון המשוואה: 2(x + 4) = 16?", options: ["x = 4", "x = 6", "x = 8", "x = 2"], correct: 0 }]
+        },
+        "מתמטיקה: גיאומטריה ושטחים": {
+            "קל": [{ question: "כמה צלעות יש למשולש?", options: ["3", "4", "5", "6"], correct: 0 }],
+            "בינוני": [{ question: "מהו שטח מלבן שאורכו 8 ס\"מ ורוחבו 5 ס\"מ?", options: ["13 סמ\"ר", "26 סמ\"ר", "40 סמ\"ר", "45 סמ\"ר"], correct: 2 }],
+            "קשה": [{ question: "מהו שטח עיגול שרדיוסו 5 ס\"מ? (π ≈ 3.14)", options: ["31.4 סמ\"ר", "78.5 סמ\"ר", "15.7 סמ\"ר", "62.8 סמ\"ר"], correct: 1 }]
+        },
+        "מתמטיקה: חזקות ושורשים": {
+            "קל": [{ question: "מהו השורש הריבועי של 81?", options: ["7", "8", "9", "10"], correct: 2 }],
+            "בינוני": [{ question: "מהו הערך של 2 בחזקת 5 (2⁵)?", options: ["16", "32", "64", "10"], correct: 1 }],
+            "קשה": [{ question: "כמה זה שורש 144 ועוד 3 בחזקת 2?", options: ["15", "21", "25", "18"], correct: 1 }]
+        },
+        "מתמטיקה: בעיות מילים": {
+            "קל": [{ question: "לדני היו 10 תפוחים, אכל 3. כמה נשארו?", options: ["5", "6", "7", "8"], correct: 2 }],
+            "בינוני": [{ question: "רכבת נוסעת במהירות 80 קמ\"ש במשך 3 שעות. כמה עברה?", options: ["160 ק\"מ", "240 ק\"מ", "300 ק\"מ", "210 ק\"מ"], correct: 1 }],
+            "קשה": [{ question: "מחיר חולצה 120 ש\"ח לאחר הנחה של 20%. מה מחירה המקורי?", options: ["140", "150", "160", "135"], correct: 1 }]
+        },
+        "מתמטיקה: סדר פעולות חשבון": {
+            "קל": [{ question: "כמה זה 5 + 3 כפול 2?", options: ["16", "11", "13", "10"], correct: 1 }],
+            "בינוני": [{ question: "כמה זה (10 - 4) כפול (2 + 3)?", options: ["30", "20", "25", "35"], correct: 0 }],
+            "קשה": [{ question: "כמה זה 50 לחלק ל-5 בריבוע ועוד 10?", options: ["12", "15", "20", "10"], correct: 0 }]
+        },
+        "מתמטיקה: מספרים שליליים": {
+            "קל": [{ question: "מה תוצאת התרגיל: 5 - 8?", options: ["3", "-3", "2", "-2"], correct: 1 }],
+            "בינוני": [{ question: "כמה זה מינוס 4 כפול מינוס 5?", options: ["-20", "20", "-9", "9"], correct: 1 }],
+            "קשה": [{ question: "מה תוצאת התרגיל: -15 + (-5) - (-10)?", options: ["-10", "10", "-30", "0"], correct: 0 }]
+        },
+        "מתמטיקה: סטטיסטיקה וממוצע": {
+            "קל": [{ question: "מהו הממוצע של המספרים: 2, 4, 6?", options: ["3", "4", "5", "6"], correct: 1 }],
+            "בינוני": [{ question: "מהו הממוצע של המספרים: 10, 20, 30, 40?", options: ["20", "25", "30", "35"], correct: 1 }],
+            "קשה": [{ question: "ציוני תלמיד היו: 80, 90, 70, וציון נוסף כך שהממוצע הוא 85. מה הציון הרביעי?", options: ["90", "95", "100", "85"], correct: 1 }]
+        },
+        "מתמטיקה: היקף ושטח משולש": {
+            "קל": [{ question: "איך מחשבים היקף משולש?", options: ["סכום שלוש צלעותיו", "אצל כפול גובה", "צלע כפול 4", "אורך כפול רוחב"], correct: 0 }],
+            "בינוני": [{ question: "מהו שטח משולש שצלעו הבסיס 10 ס\"מ והגובה אל הבסיס 6 ס\"מ?", options: ["60 סמ\"ר", "30 סמ\"ר", "16 סמ\"ר", "40 סמ\"ר"], correct: 1 }],
+            "קשה": [{ question: "במשולש ישר זווית, הניצבים הם 6 ו-8 ס\"מ. מה אורך היתר (פיתגורס)?", options: ["10 ס\"מ", "12 ס\"מ", "14 ס\"מ", "16 ס\"מ"], correct: 0 }]
+        },
+
+        // --- 2. מדעים וביולוגיה ---
+        "מדעים: מבנה התא": {
+            "קל": [{ question: "מהו אבן הבניין הבסיסית של כל יצורים חיים?", options: ["אטום", "תא", "מולקולה", "איבר"], correct: 1 }],
+            "בינוני": [{ question: "איזה אברונים בתא אחראים על ייצור אנרגיה (ATP)?", options: ["ריבוזום", "מיטוכונדריה", "גרעין התא", "דופן התא"], correct: 1 }],
+            "קשה": [{ question: "מה תפקידו העיקרי של גרעין התא?", options: ["ייצור חלבונים", "אחסון החומר התורשתי (DNA)", "הפקת אנרגיה", "סינון חומרים"], correct: 1 }]
+        },
+        "מדעים: גוף האדם והלב": {
+            "קל": [{ question: "באיזה איבר בגוף האדם נמצא הלב?", options: ["בבטן", "בחזה", "בראש", "בגב"], correct: 1 }],
+            "בינוני": [{ question: "כמה חדרים יש בלב האדם?", options: ["2", "3", "4", "5"], correct: 2 }],
+            "קשה": [{ question: "איזה כלי דם מוביל דם עתיר חמצן מהלב אל שאר הגוף?", options: ["וריד", "עורק", "נימים", "אבי העורקים (אורטה)"], correct: 3 }]
+        },
+        "מדעים: מערכת העיכול": {
+            "קל": [{ question: "היכן מתחיל תהליך העיכול בגוף האדם?", options: ["בקיבה", "בפה", "במעי הדק", "בוושט"], correct: 1 }],
+            "בינוני": [{ question: "איזה איבר בגוף אחראי על פירוק רעלנים וייצור מרה?", options: ["הכבד", "הלבלב", "הכליות", "הטחול"], correct: 0 }],
+            "קשה": [{ question: "היכן מתבצעת עיקר ספיגת המזון לדם?", options: ["בקיבה", "במעי הגס", "במעי הדק", "בתוספתן"], correct: 2 }]
+        },
+        "מדעים: פוטוסינתזה": {
+            "קל": [{ question: "איזה גז צמחים קולטים מהאוויר בתהליך הפוטוסינתזה?", options: ["חמצן", "פחמן דו-חמצני", "חנקן", "מימן"], correct: 1 }],
+            "בינוני": [{ question: "מהי מולקולת המים המשתתפת בפוטוסינתזה?", options: ["CO2", "H2O", "NaCl", "O2"], correct: 1 }],
+            "קשה": [{ question: "איזה פיגמנט ירוק בצמחים אחראי על קליטת אור השמש?", options: ["קרוטן", "כלורופיל", "המוגלובין", "מילאנין"], correct: 1 }]
+        },
+        "מדעים: אקולוגיה וסביבה": {
+            "קל": [{ question: "כיצד נקראים יצורים החיים יחד בסביבה טבעית משותפת?", options: ["מערכת אקולוגית", "מעגל חמצן", "תא", "אטמוספירה"], correct: 0 }],
+            "בינוני": [{ question: "איזה יצור נמצא בבסיס מארג המזון (יצרן)?", options: ["אריה", "צמח / אצה", "נשר", "זאב"], correct: 1 }],
+            "קשה": [{ question: "מהו אפקט החממה המרכזי הגורם להתחממות כדור הארץ?", options: ["פליטת חנקן", "פליטת פחמן דו-חמצני (CO2)", "ירידת גשמים", "דילול המים"], correct: 1 }]
+        },
+        "מדעים: גנטיקה ו-DNA": {
+            "קל": [{ question: "היכן שמור המידע התורשתי בתא?", options: ["בממברנה", "בגרעין", "בציטופלזמה", "במיטוכונדריה"], correct: 1 }],
+            "בינוני": [{ question: "מהו שמו המלא של החומר התורשתי?", options: ["RNA", "DNA", "ATP", "CO2"], correct: 1 }],
+            "קשה": [{ question: "כמה כרומוזומים יש בתא גוף רגיל של אדם?", options: ["23", "46", "22", "48"], correct: 1 }]
+        },
+        "מדעים: כימיה וחומרים": {
+            "קל": [{ question: "מהי נוסחת המים?", options: ["CO2", "H2O", "NaCl", "O2"], correct: 1 }],
+            "בינוני": [{ question: "מהו מצב הצבירה של קרח?", options: ["גז", "נוזל", "מוצק", "פלזמה"], correct: 2 }],
+            "קשה": [{ question: "מהי הטבלה שבה מסודרים היסודות הכימיים?", options: ["הטבלה המחזורית", "טבלת ניוטון", "טבלת איינשטיין", "סולם היסודות"], correct: 0 }]
+        },
+        "מדעים: פיזיקה ואנרגיה": {
+            "קל": [{ question: "מי ניסח את חוקי הכבידה לאחר שנפל עליו תפוח?", options: ["אלברט איינשטיין", "אייזק ניוטון", "גלילאו גליליי", "תומאס אדיסון"], correct: 1 }],
+            "בינוני": [{ question: "איזה סוג אנרגיה יש לגוף הנמצא בגובה מסוים?", options: ["אנרגיית תנועה", "אנרגיה פוטנציאלית (גובה)", "אנרגיה חשמלית", "אנרגיית חום"], correct: 1 }],
+            "קשה": [{ question: "מהי מהירות האור בקירוב בריק?", options: ["300 אלף ק\"מ בשנייה", "3000 ק\"מ בשנייה", "300 מיליון ק\"מ בשנייה", "150 אלף ק\"מ בשנייה"], correct: 0 }]
+        },
+        "מדעים: אסטרונומיה": {
+            "קל": [{ question: "מהו כוכב הלכת הקרוב ביותר לשמש?", options: ["נוגה", "חמה (מרקורי)", "כדור הארץ", "מאדים"], correct: 1 }],
+            "בינוני": [{ question: "איזה כוכב לכת מכונה 'כוכב הלכת האדום'?", options: ["צדק", "שבתאי", "מאדים", "אורנוס"], correct: 2 }],
+            "קשה": [{ question: "מהו כוכב הלכת הגדול ביותר במערכת השמש?", options: ["שבתאי", "צדק", "נפטון", "ארץ"], correct: 1 }]
+        },
+        "מדעים: מערכת העצבים והמוח": {
+            "קל": [{ question: "איזה איבר מרכזי אחראי על חשיבה ושליטה בגוף?", options: ["הלב", "המוח", "הכבד", "הריאות"], correct: 1 }],
+            "בינוני": [{ question: "כיצד נקרא תא עצב בודד במערכת העצבים?", options: ["נוירון", "נפרון", "אברון", "קפילרה"], correct: 0 }],
+            "קשה": [{ question: "מהו החלק הגדול ביותר במוח האחראי על חשיבה מודעת?", options: ["המוחון", "גזע המוח", "המוח הגדול (צרברום)", "ההיפוטלמוס"], correct: 2 }]
+        },
+        "מדעים: מערכת הנשימה": {
+            "קל": [{ question: "איזה איבר בגוף אחראי על קליטת חמצן מהאוויר?", options: ["הכבד", "הריאות", "הכליות", "הלב"], correct: 1 }],
+            "בינוני": [{ question: "איזה שריר נמצא מתחת לריאות ומסייע בתהליך הנשימה?", options: ["הסרעפת", "שריר הלב", "שריר הירך", "הדו-ראשי"], correct: 0 }],
+            "קשה": [{ question: "באיזה מבנה זעיר בריאות מתבצע מעבר החמצן לדם?", options: ["נאדיות הריאה", "הברונכי", "הקנה", "סימפונות"], correct: 0 }]
+        },
+        "מדעים: מדעי כדור הארץ והגיאולוגיה": {
+            "קל": [{ question: "ממה מורכבת בעיקר השכבה החיצונית של כדור הארץ?", options: ["אש ומאגמה", "מים ויבשה (קרום כדור הארץ)", "גז טהור", "קרח"], correct: 1 }],
+            "בינוני": [{ question: "כיצד נקראת התפרצות של סלע מומס מבטן האדמה?", options: ["רעידת אדמה", "התפרצות הר געש (לבה/מאגמה)", "צונאמי", "סופת הוריקן"], correct: 1 }],
+            "קשה": [{ question: "על איזה עקרון נמדדות רעידות אדמה?", options: ["סולם ריכטר", "סולם צלזיוס", "סולם קלווין", "סולם מוהס"], correct: 0 }]
+        },
+
+        // --- 3. אנגלית ---
+        "אנגלית: אוצר מילים בסיסי": {
+            "קל": [{ question: "מה פירוש המילה 'Cat'?", options: ["כלב", "חתול", "ציפור", "דג"], correct: 1 }, { question: "איך אומרים 'תפוח' באנגלית?", options: ["Banana", "Apple", "Orange", "Grape"], correct: 1 }],
+            "בינוני": [{ question: "מה פירוש המילה 'Window'?", options: ["דלת", "חלון", "שולחן", "כיסא"], correct: 1 }],
+            "קשה": [{ question: "מה פירוש המילה 'Brave'?", options: ["פחדן", "אמיץ", "חכם", "עצוב"], correct: 1 }]
+        },
+        "אנגלית: זמנים - Present Simple": {
+            "קל": [{ question: "איזה משפט כתוב נכון ב-Present Simple?", options: ["She goes to school.", "She going to school.", "She gone to school.", "She go to school."], correct: 0 }],
+            "בינוני": [{ question: "איך נשאל שאלה נכון בגוף שלישי יחיד (He/She)?", options: ["Do he like apples?", "Does he like apples?", "Is he like apples?", "Did he like apples?"], correct: 1 }],
+            "קשה": [{ question: "מה השלילה הנכונה למשפט: 'They play football'?", options: ["They doesn't play football", "They aren't play football", "They don't play football", "They didn't play football"], correct: 2 }]
+        },
+        "אנגלית: פעלים יוצאי דופן (Irregular Verbs)": {
+            "קל": [{ question: "מהי צורת העבר (Past) של הפועל 'Go'?", options: ["Goed", "Went", "Gone", "Going"], correct: 1 }],
+            "בינוני": [{ question: "מהי צורת העבר של הפועל 'Eat'?", options: ["Eated", "Ate", "Eaten", "Eating"], correct: 1 }],
+            "קשה": [{ question: "מהי צורת ה-Past Participle (V3) של הפועל 'See'?", options: ["Saw", "Seen", "See", "Seeing"], correct: 1 }]
+        },
+        "אנגלית: שמות תואר (Adjectives)": {
+            "קל": [{ question: "איזה מבין הבאים הוא שם תואר?", options: ["Run", "Quickly", "Beautiful", "Table"], correct: 2 }],
+            "בינוני": [{ question: "מהו תואר השוואה (Comparative) של המילה 'Big'?", options: ["Biger", "Bigger", "Biggest", "More big"], correct: 1 }],
+            "קשה": [{ question: "מהו תואר הפלגה (Superlative) של המילה 'Good'?", options: ["Gooder", "Best", "Better", "Most good"], correct: 1 }]
+        },
+        "אנגלית: ביטויים וסלנג": {
+            "קל": [{ question: "מה פירוש הביטוי 'Thank you'?", options: ["בבקשה", "תודה רבה", "להתראות", "שלום"], correct: 1 }],
+            "בינוני": [{ question: "מה פירוש הביטוי 'Piece of cake'?", options: ["עוגה טעימה", "קל מאוד", "משימה קשה", "לא טעים"], correct: 1 }],
+            "קשה": [{ question: "מה פירוש הביטוי 'Break a leg'?", options: ["תשבור את הרגליים", "בהצלחה רבה", "תיזהר", "תיפול"], correct: 1 }]
+        },
+        "אנגלית: מילות קישור (Conjunctions)": {
+            "קל": [{ question: "איזו מילה פירושה 'אבל' באנגלית?", options: ["And", "But", "Because", "Or"], correct: 1 }],
+            "בינוני": [{ question: "איזו מילה תתאים להסבר סיבה ('בגלל ש')?", options: ["But", "Because", "So", "Although"], correct: 1 }],
+            "קשה": [{ question: "איזו מילה מבטאת ניגוד חזק ('למרות ש')?", options: ["Because", "Although", "And", "Or"], correct: 1 }]
+        },
+        "אנגלית: זמנים - Past Simple": {
+            "קל": [{ question: "איך נאמר 'הם הלכו' בעבר?", options: ["They go", "They goed", "They went", "They going"], correct: 2 }],
+            "בינוני": [{ question: "איך שואלים שאלה נכון ב-Past Simple?", options: ["Do you see him?", "Did you see him?", "Does you see him?", "Were you see him?"], correct: 1 }],
+            "קשה": [{ question: "מה השלילה הנכונה למשפט: 'She cleaned her room'?", options: ["She didn't cleaned", "She didn't clean", "She wasn't clean", "She don't clean"], correct: 1 }]
+        },
+        "אנגלית: כינויי גוף ורכוש (Pronouns)": {
+            "קל": [{ question: "איזה מילה מתאימה ל-'שלו' (זכר)?", options: ["Her", "His", "Their", "Our"], correct: 1 }],
+            "בינוני": [{ question: "מהו כינוי הגוף ל-'עצמם'?", options: ["Themself", "Themselves", "Theirs", "Theirselves"], correct: 1 }],
+            "קשה": [{ question: "איזה משפט נכון מבחינת כינוי רכוש?", options: ["This book is my", "This book is mine", "This is mine book", "This is me book"], correct: 1 }]
+        },
+        "אנגלית: שאלות הבנת נקרא קצרות": {
+            "קל": [{ question: "קרא: 'Tom has a red dog.' איזה צבע הכלב של תום?", options: ["שחור", "אדום", "לבן", "חום"], correct: 1 }],
+            "בינוני": [{ question: "קרא: 'Sarah goes to sleep early because she is tired.' למה סרה הולכת לישון מוקדם?", options: ["כי משעמם לה", "כי היא עייפה", "כי מאוחר", "כי היא רעבה"], correct: 1 }],
+            "קשה": [{ question: "קרא: 'Although it rained, we went outside.' האם הם יצאו החוצה?", options: ["כן, למרות הגשם", "לא, בגלל הגשם", "רק למחרת", "לא יודעים"], correct: 0 }]
+        },
+        "אנגלית: פעלים עזר (Modals)": {
+            "קל": [{ question: "איזה מילה מבטאת יכולת ('יכול')?", options: ["Can", "Must", "Should", "May"], correct: 0 }],
+            "בינוני": [{ question: "איזו מילה מבטאת חובה מוחלטת ('חייב')?", options: ["Can", "Must", "May", "Could"], correct: 1 }],
+            "קשה": [{ question: "איזה משפט מביע עצה טובה ('כדאי לך')?", options: ["You must go", "You should go", "You can go", "You might go"], correct: 1 }]
+        },
+        "אנגלית: משפטי תנאי (Conditionals)": {
+            "קל": [{ question: "במשפט תנאי טיפוס 1, באיזה זמן משתמשים בתוצאה?", options: ["Past Simple", "Future Simple (will)", "Present Simple", "Past Perfect"], correct: 1 }],
+            "בינוני": [{ question: "השלם את המשפט: 'If it rains, I __ at home.'", options: ["stay", "will stay", "stayed", "staying"], correct: 1 }],
+            "קשה": [{ question: "איזה סוג תנאי עוסק במצבים היפותטיים שלא קרו בעבר?", options: ["Zero Conditional", "First Conditional", "Second Conditional", "Third Conditional"], correct: 3 }]
+        },
+        "אנגלית: סביל ופעיל (Active & Passive)": {
+            "קל": [{ question: "במשפט סביל (Passive), מה מודגש בדרך כלל?", options: ["הפעולה", "מבצע הפעולה", "מקבלי הפעולה / האובייקט", "המקום"], correct: 2 }],
+            "בינוני": [{ question: "מהי צורת הפועל הקבועה במשפטי Passive?", options: ["V1", "V2", "Verb to be + V3", "V-ing"], correct: 2 }],
+            "קשה": [{ question: "איך הופכים את המשפט לסביל: 'Cats catch mice'?", options: ["Mice are caught by cats", "Mice were catch cats", "Mice catch cats", "Mice is catched"], correct: 0 }]
+        },
+
+        // --- 4. גיאוגרפיה והיסטוריה ---
+        "גיאוגרפיה: יבשות ועולם": {
+            "קל": [{ question: "מהי היבשת הגדולה ביותר בעולם?", options: ["אפריקה", "אסיה", "אמריקה הצפונית", "אירופה"], correct: 1 }, { question: "איזו יבשת מכונה 'היבשת הלבנה'?", options: ["אירופה", "אנטארקטיקה", "אוסטרליה", "אסיה"], correct: 1 }],
+            "בינוני": [{ question: "מהו האוקיינוס הגדול ביותר בכדור הארץ?", options: ["האוקיינוס האטלנטי", "האוקיינוס השקט", "האוקיינוס ההודי", "אוקיינוס הקרח הצפוני"], correct: 1 }],
+            "קשה": [{ question: "באיזו יבשת נמצא מדבר סהרה?", options: ["אסיה", "אפריקה", "אוסטרליה", "דרום אמריקה"], correct: 1 }]
+        },
+        "היסטוריה: מדינת ישראל וקמה": {
+            "קל": [{ question: "באיזו שנה קמה מדינת ישראל?", options: ["1945", "1948", "1956", "1967"], correct: 1 }, { question: "מהי בירת מדינת ישראל?", options: ["תל אביב", "חיפה", "ירושלים", "אילת"], correct: 2 }],
+            "בינוני": [{ question: "מי היה ראש ממשלתה הראשון של מדינת ישראל?", options: ["דוד בן-גוריון", "בנימין נתניהו", "לוי אשכול", "מנחם בגין"], correct: 0 }],
+            "קשה": [{ question: "באיזו שנה התקיימה מלחמת ששת הימים?", options: ["1956", "1967", "1973", "1982"], correct: 1 }]
+        },
+        "היסטוריה: ירושלים לאורך הדורות": {
+            "קל": [{ question: "מי היה המלך שבנה את בית המקדש הראשון בירושלים?", options: ["דוד המלך", "שלמה המלך", "שאול המלך", "חזקיהו"], correct: 1 }],
+            "בינוני": [{ question: "באיזו שנה שוחררה העיר העתיקה בירושלים?", options: ["1948", "1967", "1973", "1917"], correct: 1 }],
+            "קשה": [{ question: "מי היה הקיסר שבנה מחדש את ירושלים כעיר רומית בשם 'איליה קפיטולינה'?", options: ["אדריאנוס", "נירון", "יוליוס קיסר", "טיטוס"], correct: 0 }]
+        },
+        "היסטוריה: תקופת התנ\"ך והעת העתיקה": {
+            "קל": [{ question: "מי הוציא את בני ישראל ממצרים?", options: ["אברהם", "משה", "יהושע", "דוד"], correct: 1 }],
+            "בינוני": [{ question: "מי היה המלך הראשון של ישראל?", options: ["דוד", "שאול", "שלמה", "שמואל"], correct: 1 }],
+            "קשה": [{ question: "באיזו שנה חורבן בית המקדש השני על ידי הרומאים?", options: ["70 לספירה", "586 לפני הספירה", "132 לספירה", "37 לספירה"], correct: 0 }]
+        },
+        "היסטוריה: האימפריה הרומית והיוונית": {
+            "קל": [{ question: "מי היה הקיסר הרומאי הראשון?", options: ["יוליוס קיסר", "אוגוסטוס", "נירון", "טיבריוס"], correct: 1 }],
+            "בינוני": [{ question: "מהי שמה של התרבות העתיקה שהקימה את האקרופוליס באתונה?", options: ["רומא", "יוון העתיקה", "מצרים העתיקה", "פרס"], correct: 1 }],
+            "קשה": [{ question: "איזו אימפריה הובסה על ידי אלכסנדר הגדול?", options: ["האימפריה הפרסית", "האימפריה הרומית", "האימפריה הבבלית", "מצרים העתיקה"], correct: 0 }]
+        },
+        "גיאוגרפיה: נהרות וימים בעולם": {
+            "קל": [{ question: "מהו הנהר הארוך ביותר בעולם?", options: ["האמזונס", "הנילוס", "הגנגס", "המיסיסיפי"], correct: 1 }],
+            "בינוני": [{ question: "איזה ים מיוחד ממוקם בגבול ישראל-ירדן?", options: ["הים התיכון", "ים המלח", "הים האדום", "הים הכספי"], correct: 1 }],
+            "קשה": [{ question: "איזה נהר זורם לאורך יערות העד של אמזונאס?", options: ["הנילוס", "האמזונס", "הדנובה", "הריין"], correct: 1 }]
+        },
+        "היסטוריה: השואה והתקומה": {
+            "קל": [{ question: "באיזו יבשת התרחשה בעיקר שואת יהודי אירופה?", options: ["אסיה", "אפריקה", "אירופה", "אמריקה"], correct: 2 }],
+            "בינוני": [{ question: "מתי הסתיימה מלחמת העולם השנייה?", options: ["1942", "1945", "1948", "1939"], correct: 1 }],
+            "קשה": [{ question: "מחנה ההשמדה הגדול ביותר שפעל בשואה היה:", options: ["אושוויץ-בירקנאו", "טרבלינקה", "מיידנק", "דכאו"], correct: 0 }]
+        },
+        "גיאוגרפיה: ישראל ונופיה": {
+            "קל": [{ question: "מהו ההר הגבוה ביותר במדינת ישראל?", options: ["הר עצמון", "הר חרמון", "הר מירון", "הר תבור"], correct: 1 }],
+            "בינוני": [{ question: "איזה ים נמצא בצפון-מזרח ישראל ומהווה אגם מים מתוקים?", options: ["ים המלח", "הכנרת", "הים התיכון", "הים האדום"], correct: 1 }],
+            "קשה": [{ question: "מהו שמה של הבקעה העמוקה שבה זורם נהר הירדן?", options: ["בקעת הירדן / השבר הסורי-אפריקאי", "עמק האלה", "עמק יזרעאל", "מדבר יהודה"], correct: 0 }]
+        },
+        "היסטוריה: עולם עתיק ופלאי תבל": {
+            "קל": [{ question: "באיזו ארץ נבנו הפירמידות המפורסמות?", options: ["יוון", "מצרים", "רומא", "סין"], correct: 1 }],
+            "בינוני": [{ question: "איזו חומה ענקית נבנתה בסין להגנה?", options: ["החומה הסינית", "חומת ברלין", "החומה הרומית", "חומת בבל"], correct: 0 }],
+            "קשה": [{ question: "איזה מהפלאים העתיקים כלל את הגנים התלויים?", options: ["בבל", "אלכסנדריה", "רומא", "אתונה"], correct: 0 }]
+        },
+        "היסטוריה: המאה ה-20 והעולם המודרני": {
+            "קל": [{ question: "באיזו שנה פרצה מלחמת העולם הראשונה?", options: ["1914", "1939", "1945", "1967"], correct: 0 }],
+            "בינוני": [{ question: "מתי נחתה האנושות לראשונה על הירח (אפולו 11)?", options: ["1959", "1969", "1975", "1981"], correct: 1 }],
+            "קשה": [{ question: "באיזו שנה נפלה חומת ברלין?", options: ["1989", "1991", "1985", "1995"], correct: 0 }]
+        },
+        "גיאוגרפיה: בירות העולם": {
+            "קל": [{ question: "מהי בירת צרפת?", options: ["לונדון", "פריז", "רומא", "מדריד"], correct: 1 }],
+            "בינוני": [{ question: "מהי בירת יפן?", options: ["בייג'ין", "סיאול", "טוקיו", "בנגקוק"], correct: 2 }],
+            "קשה": [{ question: "מהי בירת אוסטרליה (שימו לב, לא סידני)?", options: ["מלבורן", "קנברה", "סידני", "בריזביין"], correct: 1 }]
+        },
+        "היסטוריה: המהפכה התעשייתית": {
+            "קל": [{ question: "באיזו מדינה החלה המהפכה התעשייתית במאה ה-18?", options: ["צרפת", "בריטניה (אנגליה)", "גרמניה", "ארצות הברית"], correct: 1 }],
+            "בינוני": [{ question: "איזו המצאה מרכזית האיצה את המהפכה התעשייתית?", options: ["מנוע הקיטור", "נורה חשמלית", "הטלפון", "המחשב"], correct: 0 }],
+            "קשה": [{ question: "איזה מקור אנרגיה היה הבסיס המרכזי בתחילת המהפכה התעשייתית?", options: ["נפט", "פחם", "אנרגיית שמש", "גז טבעי"], correct: 1 }]
+        }
+    };
+
+    let currentTopic = "";
+    let currentDifficulty = "";
+    let activeQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function backToMenu() {
+        document.getElementById('difficulty-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('end-screen').classList.add('hidden');
+        document.getElementById('menu-screen').classList.remove('hidden');
+        document.getElementById('ranks-sidebar').style.display = 'block';
+        
+        const topicsContainer = document.getElementById('topics-container');
+        topicsContainer.innerHTML = '';
+
+        Object.keys(gameData).forEach(topic => {
+            const btn = document.createElement('button');
+            btn.className = 'topic-btn';
+            btn.innerText = topic;
+            btn.onclick = () => selectTopic(topic);
+            topicsContainer.appendChild(btn);
+        });
+    }
+
+    function selectTopic(topic) {
+        currentTopic = topic;
+        document.getElementById('selected-topic-title').innerText = `נושא: ${topic}`;
+        document.getElementById('menu-screen').classList.add('hidden');
+        document.getElementById('difficulty-screen').classList.remove('hidden');
+    }
+
+    function setDifficulty(difficulty) {
+        currentDifficulty = difficulty;
+        let baseQuestions = gameData[currentTopic][difficulty];
+        
+        let requestedCount = parseInt(document.getElementById('num-questions').value) || 5;
+        if (requestedCount < 1) requestedCount = 1;
+        if (requestedCount > 50) requestedCount = 50;
+
+        activeQuestions = [];
+        for (let i = 0; i < requestedCount; i++) {
+            let q = baseQuestions[i % baseQuestions.length];
+            activeQuestions.push(q);
+        }
+
+        currentQuestionIndex = 0;
+        score = 0;
+
+        document.getElementById('ranks-sidebar').style.display = 'none';
+        document.getElementById('difficulty-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        document.getElementById('total-q-num').innerText = activeQuestions.length;
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        if (currentQuestionIndex >= activeQuestions.length) {
+            endGame();
+            return;
+        }
+
+        const q = activeQuestions[currentQuestionIndex];
+        document.getElementById('question-text').innerText = q.question;
+        document.getElementById('current-q-num').innerText = currentQuestionIndex + 1;
+        document.getElementById('score').innerText = score;
+        document.getElementById('feedback-area').innerText = '';
+        document.getElementById('next-btn').classList.add('hidden');
+        updateRank();
+
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+
+        q.options.forEach((option, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = option;
+            btn.onclick = () => checkAnswer(index, btn);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selectedOption, selectedBtn) {
+        const q = activeQuestions[currentQuestionIndex];
+        const allButtons = document.querySelectorAll('.option-btn');
+        
+        allButtons.forEach(b => b.disabled = true);
+
+        const feedbackArea = document.getElementById('feedback-area');
+        
+        if (selectedOption === q.correct) {
+            score += (currentDifficulty === 'קשה' ? 30 : currentDifficulty === 'בינוני' ? 20 : 10);
+            selectedBtn.style.backgroundColor = 'var(--accent)';
+            selectedBtn.style.borderColor = 'var(--accent)';
+            feedbackArea.innerText = "תשובה נכונה! כל הכבוד! 🎉";
+            feedbackArea.className = "feedback correct-feedback";
+        } else {
+            selectedBtn.style.backgroundColor = 'var(--danger)';
+            selectedBtn.style.borderColor = 'var(--danger)';
+            allButtons[q.correct].style.backgroundColor = 'var(--accent)';
+            allButtons[q.correct].style.borderColor = 'var(--accent)';
+            feedbackArea.innerText = "תשובה שגויה! ❌";
+            feedbackArea.className = "feedback wrong-feedback";
+        }
+
+        document.getElementById('score').innerText = score;
+        updateRank();
+        document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+
+    function updateRank() {
+        let rankText = "מתחיל 🥉";
+        if (score >= 50 && score < 100) rankText = "לומד מתקדם 🥈";
+        if (score >= 100 && score < 150) rankText = "מומחה 🥇";
+        if (score >= 150 && score < 200) rankText = "מאסטר 💎";
+        if (score >= 200) rankText = "אלוף StudyLens 👑";
+        
+        document.getElementById('rank').innerText = rankText;
+        return rankText;
+    }
+
+    function endGame() {
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('end-screen').classList.remove('hidden');
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('final-rank').innerText = updateRank();
+    }
+
+    backToMenu();
+</script>
+
+</body>
+</html>
